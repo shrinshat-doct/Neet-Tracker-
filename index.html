@@ -3,86 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEET Ultimate Tracker</title>
+    <title>NEET Full Syllabus Tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .progress-transition { transition: width 0.5s ease-in-out; }
-        body { background-color: #f3f4f6; }
+        body { background-color: #f9fafb; font-family: sans-serif; }
+        .subject-card { margin-bottom: 20px; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
     </style>
 </head>
-<body class="p-4">
+<body class="pb-20">
 
-    <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6 mb-6">
-        <h1 class="text-2xl font-bold text-blue-600 mb-2">NEET Tracker 2026</h1>
-        <p class="text-gray-500 text-sm">Apni improvement track karein aur consistent rahein.</p>
+    <div class="bg-blue-600 text-white p-6 rounded-b-3xl shadow-lg mb-6 text-center">
+        <h1 class="text-3xl font-extrabold">NEET 2026 Pro</h1>
+        <p class="opacity-80 mt-1">Focus. Track. Conquer.</p>
         
-        <div class="mt-4">
-            <div class="flex justify-between mb-1">
-                <span class="text-sm font-medium text-blue-700">Overall Syllabus</span>
-                <span id="overall-percent" class="text-sm font-medium text-blue-700">0%</span>
+        <div class="mt-6 bg-white/20 p-4 rounded-xl backdrop-blur-sm">
+            <div class="flex justify-between text-sm font-bold mb-1">
+                <span>Total Progress</span>
+                <span id="overall-percent">0%</span>
             </div>
-            <div class="w-full bg-gray-200 rounded-full h-2.5">
-                <div id="overall-bar" class="bg-blue-600 h-2.5 rounded-full progress-transition" style="width: 0%"></div>
+            <div class="w-full bg-white/30 rounded-full h-3">
+                <div id="overall-bar" class="bg-yellow-400 h-3 rounded-full progress-transition" style="width: 0%"></div>
             </div>
         </div>
     </div>
 
-    <div class="max-w-md mx-auto">
-        <div class="bg-white rounded-lg shadow p-4 mb-4">
-            <h2 class="font-bold text-lg border-b pb-2 mb-4 text-red-500">Physics</h2>
-            <div id="physics-list" class="space-y-3">
-                </div>
+    <div class="max-w-md mx-auto px-4">
+        
+        <div class="subject-card bg-white">
+            <div class="bg-green-500 p-3 flex justify-between items-center">
+                <h2 class="text-white font-bold">Biology (Full)</h2>
+                <span id="bio-stats" class="text-xs text-white bg-black/20 px-2 py-1 rounded">0/0</span>
+            </div>
+            <div id="bio-list" class="p-3 space-y-2 max-h-80 overflow-y-auto"></div>
         </div>
 
-        <div class="bg-white rounded-lg shadow p-4 mb-4">
-            <h2 class="font-bold text-lg border-b pb-2 mb-4 text-green-600">Biology</h2>
-            <div id="bio-list" class="space-y-3"></div>
+        <div class="subject-card bg-white">
+            <div class="bg-orange-500 p-3 flex justify-between items-center">
+                <h2 class="text-white font-bold">Chemistry (Full)</h2>
+                <span id="chem-stats" class="text-xs text-white bg-black/20 px-2 py-1 rounded">0/0</span>
+            </div>
+            <div id="chem-list" class="p-3 space-y-2 max-h-80 overflow-y-auto"></div>
         </div>
+
+        <div class="subject-card bg-white">
+            <div class="bg-red-500 p-3 flex justify-between items-center">
+                <h2 class="text-white font-bold">Physics (Full)</h2>
+                <span id="phy-stats" class="text-xs text-white bg-black/20 px-2 py-1 rounded">0/0</span>
+            </div>
+            <div id="phy-list" class="p-3 space-y-2 max-h-80 overflow-y-auto"></div>
+        </div>
+
     </div>
 
     <script>
-        const subjects = {
-            physics: ["Units & Measurements", "Kinematics", "Laws of Motion", "Work, Energy & Power"],
-            bio: ["The Living World", "Biological Classification", "Plant Kingdom", "Animal Kingdom"]
+        const syllabus = {
+            bio: ["Diversity in Living World", "Structural Org in Animals/Plants", "Cell: Structure & Function", "Plant Physiology", "Human Physiology", "Reproduction", "Genetics & Evolution", "Biology & Human Welfare", "Biotechnology", "Ecology & Environment"],
+            chem: ["Some Basic Concepts", "Atomic Structure", "Classification of Elements", "Chemical Bonding", "States of Matter", "Thermodynamics", "Equilibrium", "Redox Reactions", "Hydrogen & s-Block", "p-Block Elements", "Organic Chem: Basics", "Hydrocarbons", "Solid State", "Solutions", "Electrochemistry", "Chemical Kinetics", "Surface Chemistry", "d & f Block", "Coordination Compounds", "Haloalkanes", "Alcohols & Phenols", "Aldehydes & Ketones", "Amines", "Biomolecules", "Polymers"],
+            phy: ["Physical World & Measurement", "Kinematics", "Laws of Motion", "Work, Energy & Power", "System of Particles", "Gravitation", "Properties of Bulk Matter", "Thermodynamics", "Oscillations & Waves", "Electrostatics", "Current Electricity", "Magnetic Effects", "Magnetism", "Electromagnetic Induction", "AC", "Electromagnetic Waves", "Optics", "Dual Nature of Matter", "Atoms & Nuclei", "Electronic Devices"]
         };
 
-        function loadTracker() {
-            const savedData = JSON.parse(localStorage.getItem('neetProgress')) || {};
+        function render() {
+            const data = JSON.parse(localStorage.getItem('neetPro')) || {};
             
-            Object.keys(subjects).forEach(sub => {
-                const container = document.getElementById(`${sub}-list`);
-                subjects[sub].forEach(chapter => {
-                    const isChecked = savedData[chapter] ? 'checked' : '';
-                    container.innerHTML += `
-                        <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
-                            <label class="text-sm text-gray-700">${chapter}</label>
-                            <input type="checkbox" ${isChecked} onchange="updateProgress('${chapter}', this.checked)" 
-                                   class="w-5 h-5 text-blue-600 rounded">
+            Object.keys(syllabus).forEach(sub => {
+                const list = document.getElementById(`${sub}-list`);
+                list.innerHTML = "";
+                syllabus[sub].forEach(ch => {
+                    const checked = data[ch] ? 'checked' : '';
+                    list.innerHTML += `
+                        <div class="flex items-center justify-between border-b border-gray-100 py-2">
+                            <span class="text-sm text-gray-600">${ch}</span>
+                            <input type="checkbox" ${checked} onchange="toggle('${ch}', this.checked)" class="w-5 h-5 rounded border-gray-300">
                         </div>
                     `;
                 });
             });
-            calculateStats();
+            update();
         }
 
-        function updateProgress(chapter, status) {
-            const savedData = JSON.parse(localStorage.getItem('neetProgress')) || {};
-            savedData[chapter] = status;
-            localStorage.setItem('neetProgress', JSON.stringify(savedData));
-            calculateStats();
+        function toggle(ch, val) {
+            const data = JSON.parse(localStorage.getItem('neetPro')) || {};
+            data[ch] = val;
+            localStorage.setItem('neetPro', JSON.stringify(data));
+            update();
         }
 
-        function calculateStats() {
-            const savedData = JSON.parse(localStorage.getItem('neetProgress')) || {};
-            const totalChapters = subjects.physics.length + subjects.bio.length;
-            const completed = Object.values(savedData).filter(val => val === true).length;
-            
-            const percent = Math.round((completed / totalChapters) * 100);
-            document.getElementById('overall-bar').style.width = percent + '%';
-            document.getElementById('overall-percent').innerText = percent + '%';
+        function update() {
+            const data = JSON.parse(localStorage.getItem('neetPro')) || {};
+            let total = 0;
+            let done = 0;
+
+            Object.keys(syllabus).forEach(sub => {
+                let subTotal = syllabus[sub].length;
+                let subDone = syllabus[sub].filter(ch => data[ch]).length;
+                document.getElementById(`${sub}-stats`).innerText = `${subDone}/${subTotal}`;
+                total += subTotal;
+                done += subDone;
+            });
+
+            const p = Math.round((done / total) * 100) || 0;
+            document.getElementById('overall-bar').style.width = p + '%';
+            document.getElementById('overall-percent').innerText = p + '%';
         }
 
-        window.onload = loadTracker;
+        render();
     </script>
 </body>
 </html>

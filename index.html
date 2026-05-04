@@ -3,109 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEET Full Syllabus Tracker</title>
+    <title>NEET 2026 Admin Pro Tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .progress-transition { transition: width 0.5s ease-in-out; }
-        body { background-color: #f9fafb; font-family: sans-serif; }
-        .subject-card { margin-bottom: 20px; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        body { background-color: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
     </style>
 </head>
-<body class="pb-20">
+<body class="pb-24">
 
-    <div class="bg-blue-600 text-white p-6 rounded-b-3xl shadow-lg mb-6 text-center">
-        <h1 class="text-3xl font-extrabold">NEET 2026 Pro</h1>
-        <p class="opacity-80 mt-1">Focus. Track. Conquer.</p>
+    <nav class="bg-indigo-700 text-white p-5 shadow-xl sticky top-0 z-50 rounded-b-2xl">
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="text-xl font-bold">NEET Goal 2026</h1>
+            <button onclick="toggleAdmin()" class="bg-indigo-500 px-3 py-1 rounded-md text-xs border border-indigo-300">Admin Login</button>
+        </div>
+        <div class="bg-white/10 p-3 rounded-lg">
+            <div class="flex justify-between text-xs mb-1">
+                <span>Overall Syllabus Completion</span>
+                <span id="overall-perc">0%</span>
+            </div>
+            <div class="w-full bg-gray-300/30 h-2 rounded-full">
+                <div id="overall-bar" class="bg-yellow-400 h-2 rounded-full progress-transition" style="width: 0%"></div>
+            </div>
+        </div>
+    </nav>
+
+    <div id="user-view" class="max-w-md mx-auto p-4 space-y-6">
         
-        <div class="mt-6 bg-white/20 p-4 rounded-xl backdrop-blur-sm">
-            <div class="flex justify-between text-sm font-bold mb-1">
-                <span>Total Progress</span>
-                <span id="overall-percent">0%</span>
-            </div>
-            <div class="w-full bg-white/30 rounded-full h-3">
-                <div id="overall-bar" class="bg-yellow-400 h-3 rounded-full progress-transition" style="width: 0%"></div>
-            </div>
+        <div class="flex space-x-2 mb-4 overflow-x-auto pb-2">
+            <button onclick="showTab('bio')" class="bg-green-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow">Biology</button>
+            <button onclick="showTab('chem')" class="bg-orange-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow">Chemistry</button>
+            <button onclick="showTab('phy')" class="bg-red-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow">Physics</button>
+        </div>
+
+        <div id="bio" class="tab-content active bg-white rounded-2xl shadow-sm p-4">
+            <h3 class="font-bold text-green-600 mb-3 border-b pb-1">Biology Syllabus (38 Chapters)</h3>
+            <div id="bio-list" class="space-y-3 max-h-[500px] overflow-y-auto pr-2"></div>
+        </div>
+
+        <div id="chem" class="tab-content bg-white rounded-2xl shadow-sm p-4">
+            <h3 class="font-bold text-orange-600 mb-3 border-b pb-1">Chemistry Syllabus</h3>
+            <div id="chem-list" class="space-y-3 max-h-[500px] overflow-y-auto pr-2"></div>
+        </div>
+
+        <div id="phy" class="tab-content bg-white rounded-2xl shadow-sm p-4">
+            <h3 class="font-bold text-red-600 mb-3 border-b pb-1">Physics Syllabus</h3>
+            <div id="phy-list" class="space-y-3 max-h-[500px] overflow-y-auto pr-2"></div>
         </div>
     </div>
 
-    <div class="max-w-md mx-auto px-4">
-        
-        <div class="subject-card bg-white">
-            <div class="bg-green-500 p-3 flex justify-between items-center">
-                <h2 class="text-white font-bold">Biology (Full)</h2>
-                <span id="bio-stats" class="text-xs text-white bg-black/20 px-2 py-1 rounded">0/0</span>
+    <div id="admin-view" class="hidden max-w-md mx-auto p-4">
+        <div class="bg-gray-800 text-white p-6 rounded-2xl shadow-2xl">
+            <h2 class="text-xl font-bold mb-4 border-b border-gray-600 pb-2">Admin Dashboard</h2>
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="bg-gray-700 p-3 rounded-lg text-center">
+                    <p class="text-xs opacity-70">Total Users</p>
+                    <p class="text-2xl font-bold">1,240</p>
+                </div>
+                <div class="bg-gray-700 p-3 rounded-lg text-center">
+                    <p class="text-xs opacity-70">Today's Revenue</p>
+                    <p class="text-2xl font-bold text-green-400">₹450</p>
+                </div>
             </div>
-            <div id="bio-list" class="p-3 space-y-2 max-h-80 overflow-y-auto"></div>
+            <button onclick="toggleAdmin()" class="w-full bg-red-500 py-2 rounded-lg font-bold">Close Admin Panel</button>
         </div>
-
-        <div class="subject-card bg-white">
-            <div class="bg-orange-500 p-3 flex justify-between items-center">
-                <h2 class="text-white font-bold">Chemistry (Full)</h2>
-                <span id="chem-stats" class="text-xs text-white bg-black/20 px-2 py-1 rounded">0/0</span>
-            </div>
-            <div id="chem-list" class="p-3 space-y-2 max-h-80 overflow-y-auto"></div>
-        </div>
-
-        <div class="subject-card bg-white">
-            <div class="bg-red-500 p-3 flex justify-between items-center">
-                <h2 class="text-white font-bold">Physics (Full)</h2>
-                <span id="phy-stats" class="text-xs text-white bg-black/20 px-2 py-1 rounded">0/0</span>
-            </div>
-            <div id="phy-list" class="p-3 space-y-2 max-h-80 overflow-y-auto"></div>
-        </div>
-
     </div>
 
     <script>
         const syllabus = {
-            bio: ["The Living World", "Biological Classification", "Plant Kingdom", "Animal Kingdom", "Morphology of Flowering Plants", "Anatomy of Flowering Plants", "Structural Organisation in Animals", "Cell: The Unit of Life", "Biomolecules", "Cell Cycle and Cell Division", "Transport in Plants", "Mineral Nutrition", "Photosynthesis in Higher Plants", "Respiration in Plants", "Plant Growth and Development", "Digestion and Absorption", "Breathing and Exchange of Gases", "Body Fluids and Circulation", "Excretory Products and Their Elimination", "Locomotion and Movement", "Neural Control and Coordination", "Chemical Coordination and Integration", "Reproduction in Organisms", "Sexual Reproduction in Flowering Plants", "Human Reproduction", "Reproductive Health", "Principles of Inheritance and Variation", "Molecular Basis of Inheritance", "Evolution", "Human Health and Disease", "Strategies for Enhancement in Food Production", "Microbes in Human Welfare", "Biotechnology: Principles and Processes", "Biotechnology and its Applications", "Organisms and Populations", "Ecosystem", "Biodiversity and Conservation", "Environmental Issues"]
-            ,
-            chem: ["Some Basic Concepts", "Atomic Structure", "Classification of Elements", "Chemical Bonding", "States of Matter", "Thermodynamics", "Equilibrium", "Redox Reactions", "Hydrogen & s-Block", "p-Block Elements", "Organic Chem: Basics", "Hydrocarbons", "Solid State", "Solutions", "Electrochemistry", "Chemical Kinetics", "Surface Chemistry", "d & f Block", "Coordination Compounds", "Haloalkanes", "Alcohols & Phenols", "Aldehydes & Ketones", "Amines", "Biomolecules", "Polymers"],
-            phy: ["Physical World & Measurement", "Kinematics", "Laws of Motion", "Work, Energy & Power", "System of Particles", "Gravitation", "Properties of Bulk Matter", "Thermodynamics", "Oscillations & Waves", "Electrostatics", "Current Electricity", "Magnetic Effects", "Magnetism", "Electromagnetic Induction", "AC", "Electromagnetic Waves", "Optics", "Dual Nature of Matter", "Atoms & Nuclei", "Electronic Devices"]
+            bio: ["The Living World", "Biological Classification", "Plant Kingdom", "Animal Kingdom", "Morphology of Flowering Plants", "Anatomy of Flowering Plants", "Structural Organisation in Animals", "Cell: Unit of Life", "Biomolecules", "Cell Cycle", "Photosynthesis", "Respiration in Plants", "Plant Growth", "Breathing & Exchange", "Body Fluids", "Excretory Products", "Locomotion", "Neural Control", "Chemical Coordination", "Sexual Reproduction (Plants)", "Human Reproduction", "Reproductive Health", "Inheritance & Variation", "Molecular Basis", "Evolution", "Human Health", "Microbes in Welfare", "Biotech: Principles", "Biotech: Apps", "Organisms & Pop", "Ecosystem", "Biodiversity"],
+            chem: ["Basic Concepts", "Structure of Atom", "Periodic Table", "Chemical Bonding", "Thermodynamics", "Equilibrium", "Redox", "s-Block", "p-Block", "Hydrocarbons", "Solid State", "Solutions", "Electrochemistry", "Kinetics", "Surface Chem", "d & f Block", "Coordination", "Haloalkanes", "Phenols", "Aldehydes", "Amines", "Biomolecules"],
+            phy: ["Units & Measure", "Kinematics", "Laws of Motion", "Work Energy", "Gravitation", "Bulk Matter", "Thermodynamics", "Oscillations", "Waves", "Electrostatics", "Current Electricity", "Magnetism", "EMI & AC", "Optics", "Modern Physics", "Electronic Devices"]
         };
 
+        function showTab(sub) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById(sub).classList.add('active');
+        }
+
+        function toggleAdmin() {
+            document.getElementById('user-view').classList.toggle('hidden');
+            document.getElementById('admin-view').classList.toggle('hidden');
+        }
+
         function render() {
-            const data = JSON.parse(localStorage.getItem('neetPro')) || {};
-            
+            const data = JSON.parse(localStorage.getItem('neetData')) || {};
             Object.keys(syllabus).forEach(sub => {
                 const list = document.getElementById(`${sub}-list`);
                 list.innerHTML = "";
                 syllabus[sub].forEach(ch => {
                     const checked = data[ch] ? 'checked' : '';
                     list.innerHTML += `
-                        <div class="flex items-center justify-between border-b border-gray-100 py-2">
-                            <span class="text-sm text-gray-600">${ch}</span>
-                            <input type="checkbox" ${checked} onchange="toggle('${ch}', this.checked)" class="w-5 h-5 rounded border-gray-300">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100">
+                            <div>
+                                <p class="text-sm font-semibold text-gray-700">${ch}</p>
+                                <p class="text-[10px] text-gray-400">Next Revision: ${data[ch] ? 'In 3 Days' : 'Pending'}</p>
+                            </div>
+                            <input type="checkbox" ${checked} onchange="toggle('${ch}', this.checked)" class="w-6 h-6 rounded-lg accent-indigo-600">
                         </div>
                     `;
                 });
             });
-            update();
+            updateStats();
         }
 
         function toggle(ch, val) {
-            const data = JSON.parse(localStorage.getItem('neetPro')) || {};
+            const data = JSON.parse(localStorage.getItem('neetData')) || {};
             data[ch] = val;
-            localStorage.setItem('neetPro', JSON.stringify(data));
-            update();
+            localStorage.setItem('neetData', JSON.stringify(data));
+            updateStats();
         }
 
-        function update() {
-            const data = JSON.parse(localStorage.getItem('neetPro')) || {};
-            let total = 0;
-            let done = 0;
-
-            Object.keys(syllabus).forEach(sub => {
-                let subTotal = syllabus[sub].length;
-                let subDone = syllabus[sub].filter(ch => data[ch]).length;
-                document.getElementById(`${sub}-stats`).innerText = `${subDone}/${subTotal}`;
-                total += subTotal;
-                done += subDone;
-            });
-
-            const p = Math.round((done / total) * 100) || 0;
+        function updateStats() {
+            const data = JSON.parse(localStorage.getItem('neetData')) || {};
+            let total = Object.values(syllabus).flat().length;
+            let done = Object.values(syllabus).flat().filter(ch => data[ch]).length;
+            let p = Math.round((done/total)*100) || 0;
             document.getElementById('overall-bar').style.width = p + '%';
-            document.getElementById('overall-percent').innerText = p + '%';
+            document.getElementById('overall-perc').innerText = p + '%';
         }
 
         render();

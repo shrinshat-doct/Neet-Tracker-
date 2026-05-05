@@ -1,159 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyAvZDXd_ZxngXmlo5_C4YpXN_8oD3h0g", 
-    authDomain: "neet-tracker-cc5b2.firebaseapp.com",
-    projectId: "neet-tracker-cc5b2",
-    storageBucket: "neet-tracker-cc5b2.appspot.com",
-    messagingSenderId: "792032164742",
-    appId: "1:792032164742:web:e9b60e6e730073286b0f02",
-    measurementId: "G-C5S1MM8DZV"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  // Yeh function hum buttons ke saath use karenge
-  window.markDone = async (chap) => {
-    try {
-      await setDoc(doc(db, "students", "nishat_01"), { [chap]: "Done" }, { merge: true });
-      alert(chap + " saved to Cloud!");
-    } catch (e) {
-      alert("Error: " + e.message);
-    }
-  };
-</script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEET 2026 Admin Pro Tracker</title>
+    <title>NEET Pro Tracker | Spaced Revision</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .progress-transition { transition: width 0.5s ease-in-out; }
-        body { background-color: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-    </style>
-</head>
-<body class="pb-24">
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    <nav class="bg-indigo-700 text-white p-5 shadow-xl sticky top-0 z-50 rounded-b-2xl">
-        <div class="flex justify-between items-center mb-4">
-            <h1 class="text-xl font-bold">NEET Goal 2026</h1>
-            <button onclick="toggleAdmin()" class="bg-indigo-500 px-3 py-1 rounded-md text-xs border border-indigo-300">Admin Login</button>
-        </div>
-        <div class="bg-white/10 p-3 rounded-lg">
-            <div class="flex justify-between text-xs mb-1">
-                <span>Overall Syllabus Completion</span>
-                <span id="overall-perc">0%</span>
-            </div>
-            <div class="w-full bg-gray-300/30 h-2 rounded-full">
-                <div id="overall-bar" class="bg-yellow-400 h-2 rounded-full progress-transition" style="width: 0%"></div>
-            </div>
-        </div>
-    </nav>
-
-    <div id="user-view" class="max-w-md mx-auto p-4 space-y-6">
-        
-        <div class="flex space-x-2 mb-4 overflow-x-auto pb-2">
-            <button onclick="showTab('bio')" class="bg-green-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow">Biology</button>
-            <button onclick="showTab('chem')" class="bg-orange-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow">Chemistry</button>
-            <button onclick="showTab('phy')" class="bg-red-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow">Physics</button>
-        </div>
-
-        <div id="bio" class="tab-content active bg-white rounded-2xl shadow-sm p-4">
-            <h3 class="font-bold text-green-600 mb-3 border-b pb-1">Biology Syllabus (38 Chapters)</h3>
-            <div id="bio-list" class="space-y-3 max-h-[500px] overflow-y-auto pr-2"></div>
-        </div>
-
-        <div id="chem" class="tab-content bg-white rounded-2xl shadow-sm p-4">
-            <h3 class="font-bold text-orange-600 mb-3 border-b pb-1">Chemistry Syllabus</h3>
-            <div id="chem-list" class="space-y-3 max-h-[500px] overflow-y-auto pr-2"></div>
-        </div>
-
-        <div id="phy" class="tab-content bg-white rounded-2xl shadow-sm p-4">
-            <h3 class="font-bold text-red-600 mb-3 border-b pb-1">Physics Syllabus</h3>
-            <div id="phy-list" class="space-y-3 max-h-[500px] overflow-y-auto pr-2"></div>
-        </div>
-    </div>
-
-    <div id="admin-view" class="hidden max-w-md mx-auto p-4">
-        <div class="bg-gray-800 text-white p-6 rounded-2xl shadow-2xl">
-            <h2 class="text-xl font-bold mb-4 border-b border-gray-600 pb-2">Admin Dashboard</h2>
-            <div class="grid grid-cols-2 gap-4 mb-6">
-                <div class="bg-gray-700 p-3 rounded-lg text-center">
-                    <p class="text-xs opacity-70">Total Users</p>
-                    <p class="text-2xl font-bold">1,240</p>
-                </div>
-                <div class="bg-gray-700 p-3 rounded-lg text-center">
-                    <p class="text-xs opacity-70">Today's Revenue</p>
-                    <p class="text-2xl font-bold text-green-400">₹450</p>
-                </div>
-            </div>
-            <button onclick="toggleAdmin()" class="w-full bg-red-500 py-2 rounded-lg font-bold">Close Admin Panel</button>
-        </div>
-    </div>
-
-    <script>
-        const syllabus = {
-            bio: ["The Living World", "Biological Classification", "Plant Kingdom", "Animal Kingdom", "Morphology of Flowering Plants", "Anatomy of Flowering Plants", "Structural Organisation in Animals", "Cell: Unit of Life", "Biomolecules", "Cell Cycle", "Photosynthesis", "Respiration in Plants", "Plant Growth", "Breathing & Exchange", "Body Fluids", "Excretory Products", "Locomotion", "Neural Control", "Chemical Coordination", "Sexual Reproduction (Plants)", "Human Reproduction", "Reproductive Health", "Inheritance & Variation", "Molecular Basis", "Evolution", "Human Health", "Microbes in Welfare", "Biotech: Principles", "Biotech: Apps", "Organisms & Pop", "Ecosystem", "Biodiversity"],
-            chem: ["Basic Concepts", "Structure of Atom", "Periodic Table", "Chemical Bonding", "Thermodynamics", "Equilibrium", "Redox", "s-Block", "p-Block", "Hydrocarbons", "Solid State", "Solutions", "Electrochemistry", "Kinetics", "Surface Chem", "d & f Block", "Coordination", "Haloalkanes", "Phenols", "Aldehydes", "Amines", "Biomolecules"],
-            phy: ["Units & Measure", "Kinematics", "Laws of Motion", "Work Energy", "Gravitation", "Bulk Matter", "Thermodynamics", "Oscillations", "Waves", "Electrostatics", "Current Electricity", "Magnetism", "EMI & AC", "Optics", "Modern Physics", "Electronic Devices"]
+        // Aapka Screenshot wala Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyAvZDXd_ZxngXmlo5_C4YpXN_8oD3h0g", 
+            authDomain: "neet-tracker-cc5b2.firebaseapp.com",
+            projectId: "neet-tracker-cc5b2",
+            storageBucket: "neet-tracker-cc5b2.appspot.com",
+            messagingSenderId: "792032164742",
+            appId: "1:792032164742:web:e9b60e6e730073286b0f02",
+            measurementId: "G-C5S1MM8DZV"
         };
 
-        function showTab(sub) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.getElementById(sub).classList.add('active');
-        }
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const studentId = "nishat_01"; // Aapki Unique ID
 
-        function toggleAdmin() {
-            document.getElementById('user-view').classList.toggle('hidden');
-            document.getElementById('admin-view').classList.toggle('hidden');
-        }
+        // Function: Data Firebase mein bhejta hai aur Spaced Revision date set karta hai
+        window.markComplete = async (chapter) => {
+            const today = new Date();
+            const nextRev = new Date();
+            nextRev.setDate(today.getDate() + 3); // Agli revision 3 din baad
 
-        function render() {
-            const data = JSON.parse(localStorage.getItem('neetData')) || {};
-            Object.keys(syllabus).forEach(sub => {
-                const list = document.getElementById(`${sub}-list`);
-                list.innerHTML = "";
-                syllabus[sub].forEach(ch => {
-                    const checked = data[ch] ? 'checked' : '';
-                    list.innerHTML += `
-                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100">
-                            <div>
-                                <p class="text-sm font-semibold text-gray-700">${ch}</p>
-                                <p class="text-[10px] text-gray-400">Next Revision: ${data[ch] ? 'In 3 Days' : 'Pending'}</p>
-                            </div>
-                            <input type="checkbox" ${checked} onchange="toggle('${ch}', this.checked)" class="w-6 h-6 rounded-lg accent-indigo-600">
-                        </div>
-                    `;
+            try {
+                await setDoc(doc(db, "students", studentId), {
+                    [chapter]: {
+                        status: "Completed",
+                        completedDate: today.toLocaleDateString(),
+                        nextRevision: nextRev.toLocaleDateString(),
+                        health: "Good (Green)"
+                    }
+                }, { merge: true });
+                alert("✅ " + chapter + " Saved! Next Revision: " + nextRev.toLocaleDateString());
+            } catch (e) {
+                alert("Error: " + e.message);
+            }
+        };
+
+        // Real-time listener: Database se status check karne ke liye
+        onSnapshot(doc(db, "students", studentId), (doc) => {
+            if (doc.exists()) {
+                const data = doc.data();
+                Object.keys(data).forEach(chap => {
+                    const el = document.getElementById(chap + "-status");
+                    if (el) el.innerText = "Next Rev: " + data[chap].nextRevision;
                 });
-            });
-            updateStats();
-        }
-
-        function toggle(ch, val) {
-            const data = JSON.parse(localStorage.getItem('neetData')) || {};
-            data[ch] = val;
-            localStorage.setItem('neetData', JSON.stringify(data));
-            updateStats();
-        }
-
-        function updateStats() {
-            const data = JSON.parse(localStorage.getItem('neetData')) || {};
-            let total = Object.values(syllabus).flat().length;
-            let done = Object.values(syllabus).flat().filter(ch => data[ch]).length;
-            let p = Math.round((done/total)*100) || 0;
-            document.getElementById('overall-bar').style.width = p + '%';
-            document.getElementById('overall-perc').innerText = p + '%';
-        }
-
-        render();
+            }
+        });
     </script>
+</head>
+<body class="bg-slate-900 text-white font-sans min-h-screen p-5">
+
+    <div class="max-w-md mx-auto">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-extrabold text-blue-400">NEET Smart Tracker</h1>
+            <p class="text-slate-400 text-sm mt-2">Spaced Revision Enabled 🧠</p>
+        </header>
+
+        <section class="mb-8">
+            <h2 class="text-xl font-semibold mb-4 border-l-4 border-green-500 pl-3">Biology (High Yield)</h2>
+            <div class="space-y-3">
+                <div class="bg-slate-800 p-4 rounded-xl flex justify-between items-center shadow-lg">
+                    <div>
+                        <p class="font-medium">Biological Classification</p>
+                        <span id="Bio-Class-status" class="text-xs text-green-400">Not Started</span>
+                    </div>
+                    <button onclick="markComplete('Bio-Class')" class="bg-green-600 hover:bg-green-500 px-4 py-2 rounded-lg text-sm transition">Tick</button>
+                </div>
+                <div class="bg-slate-800 p-4 rounded-xl flex justify-between items-center shadow-lg">
+                    <div>
+                        <p class="font-medium">Plant Kingdom</p>
+                        <span id="Plant-King-status" class="text-xs text-green-400">Not Started</span>
+                    </div>
+                    <button onclick="markComplete('Plant-King')" class="bg-green-600 hover:bg-green-500 px-4 py-2 rounded-lg text-sm transition">Tick</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-xl font-semibold mb-4 border-l-4 border-blue-500 pl-3">Physics (Concepts)</h2>
+            <div class="space-y-3">
+                <div class="bg-slate-800 p-4 rounded-xl flex justify-between items-center shadow-lg">
+                    <div>
+                        <p class="font-medium">Units & Measurements</p>
+                        <span id="Units-status" class="text-xs text-blue-400">Not Started</span>
+                    </div>
+                    <button onclick="markComplete('Units')" class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg text-sm transition">Tick</button>
+                </div>
+            </div>
+        </section>
+
+        <footer class="text-center text-slate-500 text-xs mt-10">
+            Connected to Google Firebase Cloud ☁️
+        </footer>
+    </div>
+
 </body>
 </html>

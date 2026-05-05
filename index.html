@@ -1,6 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAvZDXd_ZxngXmlo5_C4YpXN_8oD3h0g", 
+    authDomain: "neet-tracker-cc5b2.firebaseapp.com",
+    projectId: "neet-tracker-cc5b2",
+    storageBucket: "neet-tracker-cc5b2.appspot.com",
+    messagingSenderId: "792032164742",
+    appId: "1:792032164742:web:e9b60e6e730073286b0f02",
+    measurementId: "G-C5S1MM8DZV"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Yeh function hum buttons ke saath use karenge
+  window.markDone = async (chap) => {
+    try {
+      await setDoc(doc(db, "students", "nishat_01"), { [chap]: "Done" }, { merge: true });
+      alert(chap + " saved to Cloud!");
+    } catch (e) {
+      alert("Error: " + e.message);
+    }
+  };
+</script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NEET 2026 Admin Pro Tracker</title>
